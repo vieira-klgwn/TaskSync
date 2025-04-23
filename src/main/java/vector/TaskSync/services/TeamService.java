@@ -1,17 +1,24 @@
 package vector.TaskSync.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vector.TaskSync.models.Team;
+import vector.TaskSync.models.User;
 import vector.TaskSync.repositories.TeamRepository;
+import vector.TaskSync.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TeamService {
-    @Autowired
-    private TeamRepository teamRepository;
+
+    private final TeamRepository teamRepository;
+    private final UserRepository userRepository;
+
+
 
     //create
     public Team save(Team team) {
@@ -47,5 +54,27 @@ public class TeamService {
     //delete
     public void deleteTeam(Long id) {
         teamRepository.deleteById(id);
+    }
+
+    public Team addMember (Long teamId, Long userId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found with id: " +teamId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        team.getMembers().add(user);
+        user.getTeams().add(team);
+        teamRepository.save(team);
+        userRepository.save(user);
+        return team;
+    }
+
+    public Team removeMember (Long teamId, Long userId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found with id: " +teamId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        team.getMembers().remove(user);
+        user.getTeams().remove(team);
+        teamRepository.save(team);
+        userRepository.save(user);
+        return team;
     }
 }

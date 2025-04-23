@@ -1,21 +1,30 @@
 package vector.TaskSync.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vector.TaskSync.models.Comment;
 import vector.TaskSync.services.CommentService;
+import vector.TaskSync.services.TeamAccessService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/comments")
+@RequiredArgsConstructor
 public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    private final TeamAccessService teamAccessService;
+
     @PostMapping
+    @PreAuthorize("hasAnyRole('USER', 'TEAM_LEAD')")
     public ResponseEntity<Comment> createComment(@RequestBody Comment comment) {
         Comment createdComment = commentService.saveComment(comment);
         return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
@@ -23,12 +32,16 @@ public class CommentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'TEAM_LEAD')")
     public ResponseEntity<List<Comment>> getAllComments() {
-        List<Comment> comments = commentService.getAllComments();
+        List<Comment> comments = commentService.getAllComments().stream()
+                .filter(comment -> comment.getTask().getTeam() == null || teamAccessService.isUserInTeam(comment.getTask().getTeam().getId()))
+                .collect(Collectors.toList());
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@teamAccessService.isUserInTeam(#id)")
     public ResponseEntity<Comment> getCommentById(@PathVariable Long id) {
         return commentService.getCommentById(id)
                 .map(comment -> new ResponseEntity<Comment>(comment,HttpStatus.OK))
@@ -36,8 +49,13 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
+
     public ResponseEntity<Comment> updateComment(@PathVariable Long id, @RequestBody Comment comment) {
         try {
+//            if ((SecurityContextHolder.getContext().getAuthentication().getName()) == (commentService.getCommentById(id).get().getAuthor().toString())) {
+//
+//
+//            }
             Comment updatedComment = commentService.updateComment(id, comment);
             return new ResponseEntity<>(updatedComment, HttpStatus.OK);
         }catch (RuntimeException e) {
@@ -53,6 +71,13 @@ public class CommentController {
         }catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping("/tasks/{taskId}/comment")
+    @PreAuthorize("hasAnyRole('USER,TEAM_LEAD')")
+    public ResponseEntity<Comment> createCommentForTask(@PathVariable("taskId") Long taskId,@RequestBody Comment comment) {
+        Comment createdComment = commentService.createCommentForTask(taskId, comment);
+        return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
     }
 
 

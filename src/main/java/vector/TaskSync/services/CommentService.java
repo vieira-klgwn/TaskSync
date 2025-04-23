@@ -1,9 +1,16 @@
 package vector.TaskSync.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import vector.TaskSync.models.Comment;
+import vector.TaskSync.models.Task;
 import vector.TaskSync.repositories.CommentRepository;
+import vector.TaskSync.repositories.TaskRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +19,8 @@ import java.util.Optional;
 public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     //create
     public Comment saveComment(Comment comment) {
@@ -48,5 +57,13 @@ public class CommentService {
     public void deleteComment(Long id) {
         commentRepository.deleteById(id);
 
+
+    }
+
+    public Comment createCommentForTask(Long taskId, Comment comment) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId ));
+        comment.setTask(task);
+        return commentRepository.save(comment);
     }
 }

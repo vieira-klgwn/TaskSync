@@ -3,7 +3,9 @@ package vector.TaskSync.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vector.TaskSync.models.Attachment;
+import vector.TaskSync.models.Task;
 import vector.TaskSync.repositories.AttachmentRepository;
+import vector.TaskSync.repositories.TaskRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +14,8 @@ import java.util.Optional;
 public class AttachmentService {
     @Autowired
     private AttachmentRepository attachmentRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     //create
     public Attachment createAttachment(Attachment attachment) {
@@ -45,5 +49,12 @@ public class AttachmentService {
     //delete
     public void deleteAttachmentById(long id) {
         attachmentRepository.deleteById(id);
+    }
+
+    public Attachment createAttachmentForTask(long taskId, Attachment attachment) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found with id " + taskId));
+        attachment.setTask(task);
+        return attachmentRepository.save(attachment);
     }
 }

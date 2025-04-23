@@ -4,6 +4,7 @@ package vector.TaskSync.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vector.TaskSync.models.Team;
 import vector.TaskSync.services.TeamService;
@@ -17,12 +18,14 @@ public class TeamController {
     private TeamService teamService;
 
     @PostMapping
+    @PreAuthorize("hasRole('TEAM_LEAD')")
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
         Team newTeam = teamService.save(team);
         return new ResponseEntity<>(newTeam, HttpStatus.CREATED);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('TEAM_LEAD')")
     public ResponseEntity<List<Team>> getAllTeams() {
         List<Team> teams = teamService.findAllTeams();
         return new ResponseEntity<>(teams, HttpStatus.OK);
@@ -55,5 +58,20 @@ public class TeamController {
         catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+
+    @PostMapping("/{teamId}/members/{userId}")
+    @PreAuthorize("hasRole('TEAM_LEAD')")
+    public ResponseEntity<Team> addMember(@PathVariable Long teamId, @PathVariable Long userId) {
+        Team updatedTeam = teamService.addMember(teamId, userId);
+        return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{teamId}/members/{userId}")
+    @PreAuthorize("hasRole('TEAM_LEAD')")
+    public ResponseEntity<Team> removeMember(@PathVariable Long teamId, @PathVariable Long userId) {
+        Team updatedTeam = teamService.removeMember(teamId, userId);
+        return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
     }
 }

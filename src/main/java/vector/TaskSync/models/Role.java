@@ -34,7 +34,8 @@ public enum Role {
                     MANAGER_UPDATE,
                     MANAGER_DELETE
             )
-    );
+    ),
+    TEAM_LEAD;
 
     @Getter
     private Set<Permission> permissions;

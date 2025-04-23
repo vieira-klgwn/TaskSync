@@ -1,9 +1,14 @@
 package vector.TaskSync.services;
 
+import com.sun.jdi.InvalidLineNumberException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vector.TaskSync.models.Task;
+import vector.TaskSync.models.Team;
+import vector.TaskSync.models.User;
 import vector.TaskSync.repositories.TaskRepository;
+import vector.TaskSync.repositories.TeamRepository;
+import vector.TaskSync.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +17,10 @@ import java.util.Optional;
 public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TeamRepository teamRepository;
 
     //Create
     public Task createTask(Task task) {
@@ -49,6 +58,27 @@ public class TaskService {
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
     }
+
+    //assign task
+
+    public Task assignTask(Long taskId, Long userId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found with id: " +taskId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        //Check if the user is among the task's team
+        if (task.getTeam() != null && !task.getTeam().getMembers().contains(user)) {
+            throw new IllegalStateException("User is not in the task's team");
+        }
+        task.setAssignee(user);
+        return taskRepository.save(task);
+
+
+
+    }
+
+
+
+
 
 
 
