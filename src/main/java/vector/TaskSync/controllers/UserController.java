@@ -1,21 +1,25 @@
 package vector.TaskSync.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vector.TaskSync.models.ChangePasswordRequest;
 import vector.TaskSync.models.User;
 import vector.TaskSync.services.UserService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody User user){
@@ -55,5 +59,11 @@ public class UserController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PatchMapping
+    public ResponseEntity<?> changePasswor(@RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
+        userService.changePassword(changePasswordRequest, connectedUser);
+        return ResponseEntity.ok().build();
     }
 }

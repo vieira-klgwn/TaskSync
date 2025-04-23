@@ -26,6 +26,16 @@ public class UserService {
     public void changePassword(ChangePasswordRequest request, Principal connecteUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connecteUser).getPrincipal();
 
+        if (passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalStateException("Wrong password");
+        }
+
+        if(!request.getNewPassword().equals(request.getConfirmationPassword())){
+            throw new IllegalStateException("Passwords do not match");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
 
     }
 
