@@ -70,12 +70,6 @@ public class AttachmentController {
         }
     }
 
-    @PostMapping("tasks/{taskId}/attachments")
-    @PreAuthorize("hasAnyRole('USER, TEAM_LEAD')")
-    public ResponseEntity<Attachment> createAttachmentForTask(@PathVariable Long taskId, @RequestBody Attachment attachment) {
-        Attachment createdAttachment = attachmentService.createAttachmentForTask(taskId, attachment);
-        return new ResponseEntity<>(createdAttachment, HttpStatus.CREATED);
-    }
 
     @PostMapping("/tasks/{taskId}/attachments")
     @PreAuthorize("hasAnyRole('USER', 'TEAM_LEAD')")

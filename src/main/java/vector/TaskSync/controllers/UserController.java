@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vector.TaskSync.models.ChangePasswordRequest;
 import vector.TaskSync.models.User;
@@ -65,5 +67,14 @@ public class UserController {
     public ResponseEntity<?> changePasswor(@RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
         userService.changePassword(changePasswordRequest, connectedUser);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getCurrentUser(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.getUserByEmail(email)
+                .map(user -> new ResponseEntity<>(user,HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
     }
 }

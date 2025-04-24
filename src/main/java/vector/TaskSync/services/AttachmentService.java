@@ -16,6 +16,8 @@ public class AttachmentService {
     private AttachmentRepository attachmentRepository;
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     //create
     public Attachment createAttachment(Attachment attachment) {
@@ -56,5 +58,10 @@ public class AttachmentService {
                 .orElseThrow(() -> new RuntimeException("Task not found with id " + taskId));
         attachment.setTask(task);
         return attachmentRepository.save(attachment);
+    }
+
+
+    public String uploadfile(org.springframework.web.multipart.MultipartFile file) {
+        return fileStorageService.uploadFile(file);
     }
 }

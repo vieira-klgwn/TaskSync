@@ -76,4 +76,11 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    //this was done by my own logic i don't know if it will work
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+
+    }
 }
