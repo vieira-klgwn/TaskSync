@@ -17,7 +17,7 @@ const Dashboard = () => {
 
     useEffect(()=> {
         //fetch task
-        axios.get('http://localhost:8080/api/')
+        axios.get('http://localhost:8080/api/tasks')
             .then(response => setTasks(response.data))
             .catch(error => console.error('Error fetching tasks:', error))
         //fetch teams
@@ -92,8 +92,9 @@ const Dashboard = () => {
 
     const handleAddComment = async (taskId, content) => {
         try{
-            await axios(`http://localhost:8080/api/tasks/${taskId}/comments`,{content})
+            await axios.post(`http://localhost:8080/api/tasks/${taskId}/comments`,{content})
             // update task with new comment
+
         }catch (error){
             console.error("Error adding comment :", error);
         }

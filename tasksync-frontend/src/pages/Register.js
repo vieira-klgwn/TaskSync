@@ -15,7 +15,8 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await register(firstName, lastName, email, password, role);
+            // I don't know but this might be calling a wrong register function, because when you hover it tells you the register function is unknown type
+            await register(firstName,lastName,email,password,role)
             navigate('/dashboard');
         } catch (err) {
             setError(err.message);

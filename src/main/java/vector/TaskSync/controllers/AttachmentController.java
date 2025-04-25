@@ -76,7 +76,7 @@ public class AttachmentController {
     public ResponseEntity<Attachment> createAttachmentForTask(@PathVariable Long taskId, @RequestParam("file") MultipartFile file) {
         Attachment attachment = new Attachment();
         attachment.setFileName(file.getOriginalFilename());
-        attachment.setFileUrl(fileStorageService.uploadFile(file)); // Implement this method
+        attachment.setFileUrl(fileStorageService.uploadFile(file));
         Attachment createdAttachment = attachmentService.createAttachmentForTask(taskId, attachment);
         return new ResponseEntity<>(createdAttachment, HttpStatus.CREATED);
     }

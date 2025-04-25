@@ -3,6 +3,7 @@ import axios from 'axios';
 
 export const  AuthContext = createContext();
 
+
 export  const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -22,12 +23,17 @@ export  const AuthProvider = ({children}) => {
     },[token]);
 
     const login = async (email, password) => {
-        const response = axios.post("http://localhost:8080/api/auth/authenticate")
-        const {accessToken} = response.data;
-        setToken(accessToken);
-        localStorage.setItem('token',accessToken);
-        const userResponse = await  axios.get("http://localhost:8080/api/users/me",{headers: { Authorization: `Bearer ${accessToken}`}})
-        setUser(userResponse.data)
+        try{
+            const response = axios.post("http://localhost:8080/api/auth/authenticate",{email,password})
+            const {accessToken} = response.data;
+            setToken(accessToken);
+            localStorage.setItem('token',accessToken);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            const userResponse = await  axios.get("http://localhost:8080/api/users/me",{headers: { Authorization: `Bearer ${accessToken}`}})
+            setUser(userResponse.data)
+        }catch (error){
+            throw new Error("Login failed")
+        }
     }
 
     const register = async (firstname, lastname, email , password, role) => {
@@ -39,8 +45,10 @@ export  const AuthProvider = ({children}) => {
             role
         })
         const {accessToken} = response.data;
+
         setToken(accessToken)
         localStorage.setItem('token', accessToken);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
         const userResponse = await axios.get('http://localhost:8080/api/users/me',{headers: {Authorization: `Bearer ${accessToken}`}});
         setUser(userResponse);
     }
