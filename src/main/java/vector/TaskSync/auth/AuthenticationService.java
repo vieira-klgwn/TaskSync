@@ -44,6 +44,7 @@ public class AuthenticationService {
         var token = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, token);
+        saveUserToken(savedUser, refreshToken);
 
         return AuthenticationResponse.builder()
                 .accessToken(token)
@@ -55,11 +56,12 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
-        var user = userRepository.findByEmail(authenticationRequest.getEmail()).orElse(null);
+        var user = userRepository.findByEmail(authenticationRequest.getEmail()).orElseThrow(() -> new IllegalStateException("User not found: " + authenticationRequest.getEmail()));
         var token = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, refreshToken);
+        saveUserToken(user, token);
 
         return AuthenticationResponse.builder()
             .accessToken(token)
@@ -103,29 +105,37 @@ public class AuthenticationService {
         final String email;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Missing or Invalid Authorization header");
             return;
         }
 
         refreshToken = authHeader.substring(7);
         email = jwtService.extractUsername(refreshToken);
 
-        if (email != null){
-            var user = userRepository.findByEmail(email).orElse(null);
-
-            if (jwtService.isTokenValid(refreshToken, user)) {
-                var accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
-                saveUserToken(user, refreshToken);
-
-                var authResponse = AuthenticationResponse.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-
-            }
+        if (email == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Invalid Refresh Token");
+            return;
         }
+
+        var user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalStateException("User not found: " + email));
+
+        if (!jwtService.isTokenValid(refreshToken, user)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Invalid or Expired Refresh Token");
+            return;
+        }
+        var accessToken = jwtService.generateToken(user);
+        revokeAllUserTokens(user);
+        saveUserToken(user, accessToken);
+
+        var authResponse = AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+
+
+
+
 
     }
 }

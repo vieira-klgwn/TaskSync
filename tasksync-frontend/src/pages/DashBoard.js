@@ -17,11 +17,11 @@ const Dashboard = () => {
 
     useEffect(()=> {
         //fetch task
-        axios.get('http://localhost:8080/api/tasks')
+        axios.get('/api/tasks')
             .then(response => setTasks(response.data))
             .catch(error => console.error('Error fetching tasks:', error))
         //fetch teams
-        axios.get('http://localhost:8080/api/teams')
+        axios.get('/api/teams')
             .then(response => setTeams(response.data))
             .catch(error => console.error('Error fetching teams:', error));
 
@@ -37,6 +37,8 @@ const Dashboard = () => {
             setNewTask({ title: '', description: '', status: 'TODO', dueDate: '' });
         }catch (error){
             console.error("Error creating task: ",error);
+            alert(error.response?.data?.message || 'Failed to create task')
+
         }
 
 
@@ -54,6 +56,7 @@ const Dashboard = () => {
             setNewTeam({name:''});
         }catch (error){
             console.error("Error creating team: ",error);
+            alert(error.response?.data?.message || 'Failed to create team')
         }
 
     }
@@ -72,6 +75,7 @@ const Dashboard = () => {
             ))
         }catch (error){
             console.error("Error assigning task: ",error)
+            alert(error.response?.data?.message || 'Failed to assign task');
         }
 
     }
@@ -87,16 +91,20 @@ const Dashboard = () => {
             setTeams(teams.map(team => team.id === teamId ? response.data : team) )
         }catch (error) {
             console.error("Error adding members: ",error);
+            alert(error.response?.data?.message || 'Failed to add member');
         }
     }
 
     const handleAddComment = async (taskId, content) => {
         try{
-            await axios.post(`http://localhost:8080/api/tasks/${taskId}/comments`,{content})
+            const response = await axios.post(`http://localhost:8080/api/tasks/${taskId}/comments`,{content})
             // update task with new comment
 
+            setTasks(tasks.map(task => task.id === taskId ? {...task,comments: [...(task.comments || []),response.data]}: task ))
+            setCommentContent('');
         }catch (error){
             console.error("Error adding comment :", error);
+            alert(error.response?.data?.message || 'Failed to add comment');
         }
     }
 
@@ -104,18 +112,22 @@ const Dashboard = () => {
         const formData = new FormData();
         formData.append('file',file)
         try{
-            const response = await axios.post(`http://localhost:8080/api/tasks/${taskId}/attachments`,formData,{headers: {'Content-Type': 'multipart/form-data'}})
+            const response = await axios.post(`/api/attachments/tasks/${taskId}/attachments`,formData,{headers: {'Content-Type': 'multipart/form-data'}})
             //update task with new attachment
+            setTasks(tasks.map(task => task.id === taskId ? {...task,attachments:[...(task.attachments || []),response.data]}:task))
+            alert('Attachment uploaded successfully');
+
         }catch (error) {
             console.error("Error uploading attachment: ",error);
+            alert(error.response?.data?.message || 'Failed to upload attachment');
         }
 
     }
 
     return (
         <div>
-            <h2>Welcome, {user?.firstname}</h2>
-            <h3>TASKS</h3>
+            <h2>Welcome, {user?.firstName}</h2>
+            <h3>Tasks</h3>
 
             <form onSubmit={handleCreateTask} className="mb-4">
                 <div className="form-group">
@@ -124,7 +136,7 @@ const Dashboard = () => {
                 <div className="form-group">
                     <input type="date" className="form-control" value={newTask.dueDate} onChange={(e)=> setNewTask({...newTask,dueDate: e.target.value})}/>
                 </div>
-                <button type="submit" className="btn btn-primary">Create task</button>
+                <button type="submit" className="btn btn-primary">Create Task</button>
 
 
             </form>
@@ -140,14 +152,15 @@ const Dashboard = () => {
                             user?.role === 'TEAM_LEAD' && (
                                 <div>
                                     <input type="number" placeholder="User ID"  onChange={(e)=> {setAssignUserId(e.target.value)}}/>
-                                    <button className="btn btn-primary" onClick={() => handleAssignTask(task.id,assignUserId)}></button>
+                                    <button className="btn btn-primary" onClick={() => handleAssignTask(task.id,assignUserId)}>Assign Task</button>
                                 </div>
                             )}
 
                         <form onSubmit={(e) =>{e.preventDefault(); handleAddComment(task.id,commentContent)} }>
                             <input type="text" placeholder="Add Comment" value={commentContent} onChange={(e) => setCommentContent(e.target.value)}/>
-                            <button type="submit">Comment</button>
-                            <input type="file" onChange={(e)=> handleUploadAttachment(task.id, e.target.files[0])}/>
+                            <button type="submit" className="btn btn-primary">Add Comment</button>
+                            <input type="file" onChange={(e)=> handleUploadAttachment(task.id, e.target.files[0])}
+                            />
                         </form>
                     </li>
 
@@ -156,22 +169,24 @@ const Dashboard = () => {
             </ul>
             {user?.role === 'TEAM_LEAD' && (
                 <>
-                    <h3>Create team</h3>
-                    <form onSubmit={handleCreateTeam}>
-                        <div className="form-group"></div>
-                        <input type="text" className="form-control" placeholder="Team Name" value={newTeam.name} onChange={(e) => setNewTeam({...newTeam, name: e.target.value})} required/>
-                        <button type="submit" className="btb btn-primary">Create Team</button>
+                    <h3>Create Team</h3>
+                    <form onSubmit={handleCreateTeam} className="mb-4">
+                        <div className="form-group">
+                            <input type="text" className="form-control" placeholder="Team Name" value={newTeam.name} onChange={(e) => setNewTeam({...newTeam, name: e.target.value})} required
+                            />
+                        </div>
+                        <button type="submit" className="btn btn-primary">Create Team</button>
                     </form>
                 </>
             )}
-            <h3>TEAMS</h3>
+            <h3>Teams</h3>
             <ul className="list-group">
                 {teams.map(team => (
                     <li key={team.id} className="list-group-item">{team.name}
                         {user?.role === 'TEAM_LEAD' && (
                             <div>
                                 <input type="number" placeholder="User ID" onChange={(e) => setMemberUserId(e.target.value)}/>
-                                <button className="btn btn-primary"  onClick={() => handleAddMember(team.id,memberUserId)}></button>
+                                <button className="btn btn-primary"  onClick={() => handleAddMember(team.id,memberUserId)}>Add Member</button>
                             </div>
 
                         )}
