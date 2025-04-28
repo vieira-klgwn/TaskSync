@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Switch from 'react-switch';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes} from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
 import './App.css';
@@ -19,25 +19,25 @@ function App() {
   };
 
   return (
-      <AuthProvider>
-        <Router>
-          <Navbar />
-          <div className="container mt-4">
-            <div className="mb-3">
-              <label>
-                <span>Toggle Theme: </span>
-                <Switch onChange={handleChange} checked={checked} />
-              </label>
-            </div>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/" element={<Dashboard />} />
-            </Routes>
-          </div>
-        </Router>
-      </AuthProvider>
+
+       <AuthProvider>
+         <Navbar />
+         <div className="container mt-4">
+           <div className="mb-3">
+             <label>
+               <span>Toggle Theme: </span>
+               <Switch onChange={handleChange} checked={checked} />
+             </label>
+           </div>
+           <Routes>
+             <Route path="/login" element={<Login />} />
+             <Route path="/register" element={<Register />} />
+             <Route path="/dashboard" element={<Dashboard />} />
+             <Route path="/" element={<Dashboard />} />
+           </Routes>
+         </div>
+       </AuthProvider>
+
   );
 }
 

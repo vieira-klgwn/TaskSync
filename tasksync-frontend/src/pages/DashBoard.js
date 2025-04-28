@@ -32,7 +32,7 @@ const Dashboard = () => {
     const handleCreateTask = async (e) => {
         e.preventDefault()
         try{
-            const response = await axios.post('http://localhost:8080/api/tasks',newTask)
+            const response = await axios.post('/api/tasks',newTask)
             setTasks([...tasks,response.data])
             setNewTask({ title: '', description: '', status: 'TODO', dueDate: '' });
         }catch (error){
@@ -51,7 +51,7 @@ const Dashboard = () => {
             return;
         }
         try{
-            const response = await axios.post('http://localhost:8080/api/teams',newTeam);
+            const response = await axios.post('/api/teams',newTeam);
             setTeams([...teams,response.data])
             setNewTeam({name:''});
         }catch (error){
@@ -68,7 +68,7 @@ const Dashboard = () => {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/api/tasks/assign/${taskId}/${userId}`);
+            const response = await axios.post('/api/tasks/assign/${taskId}/${userId}');
             setTasks(tasks.map(
                 task => task.id === taskId ? response.data: task
 
@@ -87,7 +87,7 @@ const Dashboard = () => {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/api/teams/${teamId}/members/${userId}`)
+            const response = await axios.post('/api/teams/${teamId}/members/${userId}')
             setTeams(teams.map(team => team.id === teamId ? response.data : team) )
         }catch (error) {
             console.error("Error adding members: ",error);
@@ -97,7 +97,7 @@ const Dashboard = () => {
 
     const handleAddComment = async (taskId, content) => {
         try{
-            const response = await axios.post(`http://localhost:8080/api/tasks/${taskId}/comments`,{content})
+            const response = await axios.post('/api/tasks/${taskId}/comments',{content})
             // update task with new comment
 
             setTasks(tasks.map(task => task.id === taskId ? {...task,comments: [...(task.comments || []),response.data]}: task ))
@@ -112,7 +112,7 @@ const Dashboard = () => {
         const formData = new FormData();
         formData.append('file',file)
         try{
-            const response = await axios.post(`/api/attachments/tasks/${taskId}/attachments`,formData,{headers: {'Content-Type': 'multipart/form-data'}})
+            const response = await axios.post('/api/attachments/tasks/${taskId}/attachments',formData,{headers: {'Content-Type': 'multipart/form-data'}})
             //update task with new attachment
             setTasks(tasks.map(task => task.id === taskId ? {...task,attachments:[...(task.attachments || []),response.data]}:task))
             alert('Attachment uploaded successfully');

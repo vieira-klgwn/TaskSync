@@ -14,7 +14,8 @@ export  const AuthProvider = ({ children }) => {
     useEffect(() => {
         if (accessToken) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-            axios.get('/api/users/me')
+            console.log(axios.defaults.headers.common['Authorization']);
+            axios.get('http://localhost:8080/api/users/me')
                 .then(response => {
                     setUser(response.data)
                 })
@@ -26,14 +27,14 @@ export  const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try{
-            const response = await axios.post('/api/auth/login', {email,password});
+            const response = await axios.post('http://localhost:8080/api/auth/login', {email,password});
             const {accessToken,refreshToken} = response.data;
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken',refreshToken);// test this by rewriting it again and see the popups
             axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-            const userResponse = await  axios.get('/api/users/me');
+            const userResponse = await  axios.get('http://localhost:8080/api/users/me');
             setUser(userResponse.data)
             navigate('/dashboard');
         }catch (error){
@@ -43,33 +44,41 @@ export  const AuthProvider = ({ children }) => {
 
     const register = async (firstName, lastName, email , password, role) => {
        try {
-        const response =await axios.post('/api/auth/register',{
+        const response =await axios.post('http://localhost:8080/api/auth/login',{
             firstName,
             lastName,
             email,
             password,
             role
         });
-        const {accessToken,refreshToken} = response.data;
+        console.log('Registration response:', response.data);
+        const accessToken = response.data.accessToken;
+        const refreshToken = response.data.refreshToken;
+
+        console.log('Extracted tokens:', { accessToken, refreshToken });
 
         setAccessToken(accessToken);
         setRefreshToken(refreshToken);
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken); // Test this too like in login
         axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-        const userResponse = await axios.get('/api/users/me');
+        console.log('Authorization header set:', axios.defaults.headers.common['Authorization']);
+        const userResponse = await axios.get('http://localhost:8080/api/users/me');
+        console.log('User response:', userResponse.data);
         setUser(userResponse.data);
         navigate('/dashboard');
 
 
        }catch (error) {
+            console.error('Registration error:', error.response?.data || error.message);
             throw new Error(error.response?.data?.message || 'Registration failed');
     }
 
     const refreshAccessToken = async () => {
            try {
-               const response = await axios.post('/api/auth/refresh-token',{},{headers: {Authorization: `Bearer ${refreshToken}`}})
+               const response = await axios.post('http://localhost:8080/api/auth/refresh-token',{},{headers: {Authorization: `Bearer ${refreshToken}`}})
                const {accessToken,refreshToken:newRefreshToken}= response.data;
+               console.log('Extracted tokens:', { accessToken, refreshToken });
                setAccessToken(accessToken);
                setRefreshToken(newRefreshToken);
                localStorage.setItem('accessToken',accessToken);
@@ -93,29 +102,29 @@ export  const AuthProvider = ({ children }) => {
         navigate('/login');
     };
 
-    // Axios interceptor to handle 401 errors
-    useEffect(() => {
-        const interceptor = axios.interceptors.response.use(
-            response => response,
-            async error => {
-                if (error.response?.status === 401 && refreshToken) {
-                    try {
-                        await refreshAccessToken;
-                        // Retry the original request
-                        return axios(error.config);
-                    } catch (refreshError) {
-                        logout();
-                        return Promise.reject(refreshError);
-                    }
-                }
-                return Promise.reject(error);
-            }
-        );
-        return () => axios.interceptors.response.eject(interceptor);
-    }, [refreshToken]);
+    // // Axios interceptor to handle 401 errors
+    // useEffect(() => {
+    //     const interceptor = axios.interceptors.response.use(
+    //         response => response,
+    //         async error => {
+    //             if (error.response?.status === 401 && refreshToken) {
+    //                 try {
+    //                     await refreshAccessToken;
+    //                     // Retry the original request
+    //                     return axios(error.config);
+    //                 } catch (refreshError) {
+    //                     logout();
+    //                     return Promise.reject(refreshError);
+    //                 }
+    //             }
+    //             return Promise.reject(error);
+    //         }
+    //     );
+    //     return () => axios.interceptors.response.eject(interceptor);
+    // }, [refreshToken]);
 
     return (
-        <AuthContext.Provider value={{user,accessToken,refreshToken,login,register,logout,refreshAccessToken}}>
+        <AuthContext.Provider value={{user,accessToken,refreshToken,login,register,logout}}>
             {children}
         </AuthContext.Provider>
     );

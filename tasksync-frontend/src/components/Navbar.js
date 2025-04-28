@@ -1,11 +1,11 @@
-import React,{useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {AuthContext} from "../context/AuthContext";
 
 const Navbar = () => {
     const {user,logout} = useContext(AuthContext);
     const navigate= useNavigate();
-
+    useEffect(()=>{console.log("user is ", user)},[])
     const handleLogout = () => {
         logout();
         navigate('/login')
