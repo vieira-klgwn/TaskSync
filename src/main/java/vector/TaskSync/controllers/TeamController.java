@@ -18,7 +18,7 @@ public class TeamController {
     private TeamService teamService;
 
     @PostMapping
-    @PreAuthorize("hasRole('TEAM_LEAD')")
+    @PreAuthorize("hasRole('TEAM_LEAD_CREATE')")
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
         Team newTeam = teamService.save(team);
         return new ResponseEntity<>(newTeam, HttpStatus.CREATED);

@@ -1,5 +1,6 @@
 package vector.TaskSync.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import vector.TaskSync.models.Comment;
 import vector.TaskSync.models.Task;
 import vector.TaskSync.repositories.CommentRepository;
@@ -16,11 +18,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private TaskRepository taskRepository;
+
+    private final CommentRepository commentRepository;
+
+    private final TaskRepository taskRepository;
 
     //create
     public Comment saveComment(Comment comment) {

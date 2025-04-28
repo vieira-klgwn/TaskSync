@@ -1,6 +1,7 @@
 package vector.TaskSync.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,13 +19,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/attachments")
+@RequiredArgsConstructor
 public class AttachmentController {
-    @Autowired
-    private AttachmentService attachmentService;
-    @Autowired
-    private TeamAccessService teamAccessService;
-    @Autowired
-    private FileStorageService fileStorageService;
+
+    private final AttachmentService attachmentService;
+
+    private final TeamAccessService teamAccessService;
+
+    private final FileStorageService fileStorageService;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'TEAM_LEAD')")

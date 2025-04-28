@@ -18,13 +18,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
 
     //functionality of chnaging the password
-    public void changePassword(ChangePasswordRequest request, Principal connecteUser) {
-        var user = (User) ((UsernamePasswordAuthenticationToken) connecteUser).getPrincipal();
+    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         if (passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new IllegalStateException("Wrong password");

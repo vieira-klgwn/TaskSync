@@ -26,12 +26,10 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register (RegisterRequest request){
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+    public AuthenticationResponse register(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalStateException("Email already taken: " + request.getEmail());
-
         }
-
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -39,18 +37,17 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
-
         var savedUser = userRepository.save(user);
         var token = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
+        System.out.println("Access Token Length: " + token.length());
+        System.out.println("Refresh Token Length: " + refreshToken.length());
         saveUserToken(savedUser, token);
         saveUserToken(savedUser, refreshToken);
-
         return AuthenticationResponse.builder()
                 .accessToken(token)
                 .refreshToken(refreshToken)
                 .build();
-
     }
 
 

@@ -2,8 +2,10 @@ package vector.TaskSync.models;
 
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
@@ -35,14 +37,22 @@ public enum Role {
                     MANAGER_DELETE
             )
     ),
-    TEAM_LEAD;
+    TEAM_LEAD(
+            Set.of(
+                    MANAGER_READ,
+                    MANAGER_CREATE,
+                    MANAGER_UPDATE,
+                    MANAGER_DELETE,
+                    TEAM_LEAD_CREATE,
+                    TEAM_LEAD_ASSIGN,
+                    TEAM_LEAD_ADD_MEMBER
+
+
+    ));
 
     @Getter
-    private Set<Permission> permissions;
+    private final Set<Permission> permissions;
 
-
-    Role(Set<Permission> managerRead) {
-    }
 
 
     public List<SimpleGrantedAuthority> getAuthorities() {

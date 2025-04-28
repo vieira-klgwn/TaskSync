@@ -1,5 +1,6 @@
 package vector.TaskSync.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vector.TaskSync.models.Attachment;
@@ -11,13 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AttachmentService {
-    @Autowired
-    private AttachmentRepository attachmentRepository;
-    @Autowired
-    private TaskRepository taskRepository;
-    @Autowired
-    private FileStorageService fileStorageService;
+
+    private final AttachmentRepository attachmentRepository;
+
+    private final TaskRepository taskRepository;
+
+    private  final FileStorageService fileStorageService;
 
     //create
     public Attachment createAttachment(Attachment attachment) {

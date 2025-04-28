@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -64,17 +65,26 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> changePasswor(@RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
         userService.changePassword(changePasswordRequest, connectedUser);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser(){
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userService.getUserByEmail(email)
-                .map(user -> new ResponseEntity<>(user,HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<User> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authentication: " + (authentication != null ? authentication.getName() : "null"));
+        String email = authentication != null ? authentication.getName() : null;
 
+        System.out.println("Fetching user with email: " + email);
+        return userService.getUserByEmail(email)
+                .map(user -> {
+                    System.out.println("User found: " + user.getEmail());
+                    return new ResponseEntity<>(user, HttpStatus.OK);
+                })
+                .orElseGet(() -> {
+                    System.out.println("User not found for email: " + email);
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                });
     }
 }

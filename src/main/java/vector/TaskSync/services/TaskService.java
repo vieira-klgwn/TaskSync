@@ -1,6 +1,7 @@
 package vector.TaskSync.services;
 
 import com.sun.jdi.InvalidLineNumberException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vector.TaskSync.models.Task;
@@ -14,13 +15,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TaskService {
-    @Autowired
-    private TaskRepository taskRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TeamRepository teamRepository;
+
+    private final TaskRepository taskRepository;
+
+    private final UserRepository userRepository;
+
+    private final TeamRepository teamRepository;
 
     //Create
     public Task createTask(Task task) {
