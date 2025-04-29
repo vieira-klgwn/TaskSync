@@ -1,9 +1,7 @@
 package vector.TaskSync.models;
 
-
 import jakarta.persistence.*;
-import lombok.Cleanup;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -12,22 +10,30 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Table
 @Data
-public class Team {
+public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "teams")
-    private List<User> members;
+    private Integer progress;
 
-    @OneToMany(mappedBy = "team")
+    @Column(nullable = false)
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    @OneToMany(mappedBy = "project")
     private List<Task> tasks;
-
 
     @CreatedBy
     @Column(updatable = false)
@@ -42,5 +48,4 @@ public class Team {
 
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
-
 }

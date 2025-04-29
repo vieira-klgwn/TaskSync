@@ -23,19 +23,24 @@ public class Task {
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotBlank(message = " Status can not be be null")
-    private String status; //e.g To do, in progress and done
+    private TaskStatus status; //e.g To do, in progress and done
 
     private LocalDateTime dueDate;
 
+
     @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @ManyToOne
     @JoinColumn(name= "assignee_id")
     private User assignee;
+
+    @ManyToOne
+    @JoinColumn(name="team_id")
+    private Team team;
 
     @OneToMany(mappedBy = "task")
     private List<Comment> comments;

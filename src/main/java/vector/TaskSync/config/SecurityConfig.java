@@ -74,8 +74,13 @@ public class SecurityConfig{
                                         .requestMatchers(PUT,"api/management/**").hasAnyRole("ADMIN_UPDATE","MANAGER_UPDATE")
                                         .requestMatchers(DELETE,"api/management/**").hasAnyRole("ADMIN_DELETE","MANAGER_DELETE")
                                         .requestMatchers(POST, "/api/tasks/assign/**").hasRole("TEAM_LEAD")
+                                        .requestMatchers(GET,"/api/teams/**","/api/tasks/**","/api/projects/**").hasAnyRole("USER","TEAM_LEAD")
+                                        .requestMatchers(POST,"/api/teams/**","/api/tasks/**","/api/projects/**").hasRole("TEAM_LEAD")
                                         .requestMatchers(POST, "/api/teams/**").hasRole("TEAM_LEAD")
                                         .requestMatchers(DELETE, "/api/teams/**").hasRole("TEAM_LEAD")
+                                        .requestMatchers(POST, "/api/tasks/assign/**").hasRole("TEAM_LEAD")
+                                        .requestMatchers(PUT,"/api/tasks/**").hasRole("TEAM_LEAD")
+                                        .requestMatchers(DELETE,"/api/tasks/**").hasRole("TEAM_LEAD")
                                         .anyRequest()
                                         .authenticated()
 

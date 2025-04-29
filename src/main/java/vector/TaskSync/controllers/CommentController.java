@@ -81,4 +81,13 @@ public class CommentController {
     }
 
 
+
+    @GetMapping("/tasks/{taskId}/comments")
+    @PreAuthorize("hasAnyRole('USER', 'TEAM_LEAD')")
+    public ResponseEntity<List<Comment>> getCommentsByTask(@PathVariable Long taskId) {
+        return ResponseEntity.ok(commentService.getCommentsByTask(taskId));
+    }
 }
+
+
+

@@ -69,4 +69,10 @@ public class CommentService {
         comment.setTask(task);
         return commentRepository.save(comment);
     }
+
+
+
+    public List<Comment> getCommentsByTask(Long taskId) {
+        return commentRepository.findByTaskId(taskId);
+    }
 }

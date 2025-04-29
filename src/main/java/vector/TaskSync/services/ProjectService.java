@@ -1,0 +1,62 @@
+package vector.TaskSync.services;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import vector.TaskSync.models.Project;
+import vector.TaskSync.models.Task;
+import vector.TaskSync.repositories.ProjectRepository;
+import vector.TaskSync.repositories.TaskRepository;
+import vector.TaskSync.models.TaskStatus;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class ProjectService {
+    private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
+
+    public List<Project> getAllProjects() {
+        return projectRepository.findAll();
+    }
+    public Project createProject(Project project) {
+        return projectRepository.save(project);
+    }
+    public Project getProjectById(Long id) {
+        return projectRepository.findById(id)
+                .orElse(null);
+    }
+
+    public Project updateProject(Long id, Project project) {
+        Optional <Project> projectOptional = projectRepository.findById(id);
+        if (projectOptional.isPresent()) {
+            Project project1= projectOptional.get();
+            project1.setName(project.getName());
+            project1.setDescription(project.getDescription());
+            project1.setCreatedBy(project.getCreatedBy());
+            return projectRepository.save(project);
+
+        }
+    throw new RuntimeException("Project not found");
+
+    }
+
+    public void deleteProject(Long id) {
+        projectRepository.deleteById(id);
+
+    }
+    public List<Project> getProjectsByTeam(Long teamId) {
+        List<Project> projects = projectRepository.findByTeamId(teamId);
+        projects.forEach(project -> {
+            List<Task> tasks = taskRepository.findByProjectId(project.getId());
+            long totalTasks = tasks.size();
+            long doneTasks = tasks.stream().filter(t -> t.getStatus() == TaskStatus.DONE).count();
+            project.setProgress(totalTasks > 0 ? (int) ((doneTasks * 100) / totalTasks) : 0);
+        });
+        return projects;
+    }
+
+
+
+}

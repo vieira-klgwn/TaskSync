@@ -1,12 +1,15 @@
 package vector.TaskSync.services;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.sun.jdi.InvalidLineNumberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vector.TaskSync.models.Project;
 import vector.TaskSync.models.Task;
 import vector.TaskSync.models.Team;
 import vector.TaskSync.models.User;
+import vector.TaskSync.repositories.ProjectRepository;
 import vector.TaskSync.repositories.TaskRepository;
 import vector.TaskSync.repositories.TeamRepository;
 import vector.TaskSync.repositories.UserRepository;
@@ -21,13 +24,22 @@ public class TaskService {
     private final TaskRepository taskRepository;
 
     private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
 
     private final TeamRepository teamRepository;
 
-    //Create
-    public Task createTask(Task task) {
+    //Create task
+    public Task createTask(Long projectId, Task task) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+        task.setProject(project);
         return taskRepository.save(task);
     }
+
+    public List<Task> getTasksbyProject(Long projectId) {
+        return taskRepository.getTasksByProjectId(projectId);
+    }
+
 
     //read all
     public List<Task> getAllTasks() {
@@ -35,8 +47,9 @@ public class TaskService {
     }
 
     //Read (by id)
-    public Optional<Task> getTaskById(Long id) {
-        return taskRepository.findById(id);
+    public Task getTaskById(Long id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found with id: " + id));
     }
 
     //Update
@@ -49,7 +62,7 @@ public class TaskService {
             task.setStatus(udatedTask.getStatus());
             task.setDueDate(udatedTask.getDueDate());
             task.setAssignee(udatedTask.getAssignee());
-            task.setTeam(udatedTask.getTeam());
+//            task.setTeam(udatedTask.getTeam());
 
             return taskRepository.save(task);
         }
@@ -67,7 +80,7 @@ public class TaskService {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found with id: " +taskId));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-        //Check if the user is among the task's team
+       // Check if the user is among the task's team
         if (task.getTeam() != null && !task.getTeam().getMembers().contains(user)) {
             throw new IllegalStateException("User is not in the task's team");
         }
@@ -77,10 +90,6 @@ public class TaskService {
 
 
     }
-
-
-
-
 
 
 
