@@ -60,21 +60,24 @@ public class TaskService {
     }
 
     //Update
-    public Task updateTask(Long id, Task udatedTask) {
-        Optional<Task> existingTask = taskRepository.findById(id);
-        if(existingTask.isPresent()){
-            Task task = existingTask.get();
-            task.setTitle(udatedTask.getTitle());
-            task.setDescription(udatedTask.getDescription());
-            task.setStatus(udatedTask.getStatus());
-            task.setDueDate(udatedTask.getDueDate());
-            task.setAssignee(udatedTask.getAssignee());
-//            task.setTeam(udatedTask.getTeam());
 
-            return taskRepository.save(task);
+
+    public Task updateTask(Long taskId, Task task) {
+        Task existingTask = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
+        existingTask.setTitle(task.getTitle());
+        existingTask.setStatus(task.getStatus());
+        if (task.getAssignee() != null && task.getAssignee().getId() != null) {
+            existingTask.setAssignee(userRepository.findById(task.getAssignee().getId())
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + task.getAssignee().getId())));
+        } else {
+            existingTask.setAssignee(null);
         }
-        throw new RuntimeException("Task not found with id: " +id);
+        task.setTeam(task.getTeam());
+        return taskRepository.save(existingTask);
     }
+
+
 
     //delete
     public void deleteTask(Long id) {
