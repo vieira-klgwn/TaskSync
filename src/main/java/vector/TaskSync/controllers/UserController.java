@@ -11,8 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vector.TaskSync.models.ChangePasswordRequest;
 import vector.TaskSync.models.User;
+import vector.TaskSync.models.UserDTO;
 import vector.TaskSync.services.UserService;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.security.Principal;
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class UserController {
 
 
     private final UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody User user){
@@ -71,19 +74,27 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser() {
+    public ResponseEntity<UserDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Authentication: " + (authentication != null ? authentication.getName() : "null"));
-        String email = authentication != null ? authentication.getName() : null;
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof String) {
+            logger.warn("Unauthorized access attempt");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        System.out.println("Fetching user with email: " + email);
+        String email = authentication.getName();
+        logger.info("Fetching user with email: {}", email);
         return userService.getUserByEmail(email)
                 .map(user -> {
-                    System.out.println("User found: " + user.getEmail());
-                    return new ResponseEntity<>(user, HttpStatus.OK);
+                    logger.info("User found: {}", user.getEmail());
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.setId(user.getId());
+                    userDTO.setFirstName(user.getFirstName());
+                    userDTO.setLastName(user.getLastName());
+                    userDTO.setEmail(user.getEmail());
+                    return new ResponseEntity<>(userDTO, HttpStatus.OK);
                 })
                 .orElseGet(() -> {
-                    System.out.println("User not found for email: " + email);
+                    logger.warn("User not found for email: {}", email);
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 });
     }

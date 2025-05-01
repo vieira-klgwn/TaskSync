@@ -1,5 +1,7 @@
 package vector.TaskSync.controllers;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vector.TaskSync.models.Comment;
+import vector.TaskSync.models.CommentDTO;
+import vector.TaskSync.models.UserDTO;
 import vector.TaskSync.services.CommentService;
 import vector.TaskSync.services.TeamAccessService;
 
@@ -18,8 +22,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/comments")
 @RequiredArgsConstructor
 public class CommentController {
-    @Autowired
-    private CommentService commentService;
+
+    private final CommentService commentService;
 
     private final TeamAccessService teamAccessService;
 
@@ -74,10 +78,40 @@ public class CommentController {
     }
 
     @PostMapping("/tasks/{taskId}/comment")
-    @PreAuthorize("hasAnyRole('USER,TEAM_LEAD')")
-    public ResponseEntity<Comment> createCommentForTask(@PathVariable("taskId") Long taskId,@RequestBody Comment comment) {
+    @PreAuthorize("hasAnyRole('USER','TEAM_LEAD')")
+    public ResponseEntity<CommentDTO> createCommentForTask(
+            @PathVariable("taskId") @Positive Long taskId,
+            @Valid @RequestBody CommentDTO commentDTO) {
+        Comment comment = mapToComment(commentDTO);
         Comment createdComment = commentService.createCommentForTask(taskId, comment);
-        return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
+        return new ResponseEntity<>(mapToCommentDTO(createdComment), HttpStatus.CREATED);
+    }
+
+    private Comment mapToComment(CommentDTO commentDTO) {
+        Comment comment = new Comment();
+        comment.setContent(commentDTO.getContent());
+        return comment;
+    }
+
+    private CommentDTO mapToCommentDTO(Comment comment) {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setId(comment.getId());
+        commentDTO.setContent(comment.getContent());
+        commentDTO.setCreatedDate(comment.getCreatedDate());
+
+        if (comment.getAuthor() != null) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(comment.getAuthor().getId());
+            userDTO.setFirstName(comment.getAuthor().getFirstName());
+            userDTO.setLastName(comment.getAuthor().getLastName());
+            commentDTO.setAuthor(userDTO);
+        }
+
+        if (comment.getTask() != null) {
+            commentDTO.setTaskId(comment.getTask().getId());
+        }
+
+        return commentDTO;
     }
 
 

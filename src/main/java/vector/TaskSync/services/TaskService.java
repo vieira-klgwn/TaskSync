@@ -32,6 +32,14 @@ public class TaskService {
     public Task createTask(Long projectId, Task task) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+
+        // Fetch assignee from database if provided
+        if (task.getAssignee() != null && task.getAssignee().getId() != null) {
+            User assignee = userRepository.findById(task.getAssignee().getId())
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + task.getAssignee().getId()));
+            task.setAssignee(assignee);
+        }
+
         task.setProject(project);
         return taskRepository.save(task);
     }
@@ -47,9 +55,8 @@ public class TaskService {
     }
 
     //Read (by id)
-    public Task getTaskById(Long id) {
-        return taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + id));
+    public Optional<Task> getTaskById(Long id) {
+        return taskRepository.findById(id);
     }
 
     //Update
@@ -92,5 +99,7 @@ public class TaskService {
     }
 
 
-
+    public List<Task> getTasksByProject(Long projectId) {
+        return taskRepository.getTasksByProjectId(projectId);
+    }
 }

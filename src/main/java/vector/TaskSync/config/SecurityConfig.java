@@ -76,7 +76,7 @@ public class SecurityConfig{
                                         .requestMatchers(POST, "/api/tasks/assign/**").hasRole("TEAM_LEAD")
                                         .requestMatchers(GET,"/api/teams/**","/api/tasks/**","/api/projects/**").hasAnyRole("USER","TEAM_LEAD")
                                         .requestMatchers(POST,"/api/teams/**","/api/tasks/**","/api/projects/**").hasRole("TEAM_LEAD")
-                                        .requestMatchers(POST, "/api/teams/**").hasRole("TEAM_LEAD")
+                                        .requestMatchers(POST, "/api/teams/**").hasRole("USER,TEAM_LEAD")
                                         .requestMatchers(DELETE, "/api/teams/**").hasRole("TEAM_LEAD")
                                         .requestMatchers(POST, "/api/tasks/assign/**").hasRole("TEAM_LEAD")
                                         .requestMatchers(PUT,"/api/tasks/**").hasRole("TEAM_LEAD")

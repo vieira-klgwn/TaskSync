@@ -18,14 +18,14 @@ public class TeamController {
     private TeamService teamService;
 
     @PostMapping
-    @PreAuthorize("hasRole('TEAM_LEAD_CREATE')")
+    @PreAuthorize("hasRole('TEAM_LEAD')")
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
         Team newTeam = teamService.save(team);
         return new ResponseEntity<>(newTeam, HttpStatus.CREATED);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('TEAM_LEAD')")
+    @PreAuthorize("hasAnyRole('USER','TEAM_LEAD')")
     public ResponseEntity<List<Team>> getAllTeams() {
         List<Team> teams = teamService.findAllTeams();
         return new ResponseEntity<>(teams, HttpStatus.OK);

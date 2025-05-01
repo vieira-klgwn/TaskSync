@@ -1,6 +1,7 @@
 package vector.TaskSync.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,12 +28,14 @@ public class User implements UserDetails {
 
     private String firstName;
     private String lastName;
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false, unique = true)
     private String email;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore // Prevent serialization of objects. In case you don't put this, you fall in a circle of responses when you request for the response
     private List<Token> tokens;
 
 
@@ -47,9 +50,11 @@ public class User implements UserDetails {
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "team_id")
     )
+    @JsonIgnore
     private List<Team> teams;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }

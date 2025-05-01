@@ -1,5 +1,7 @@
 package vector.TaskSync.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -25,27 +27,32 @@ public class Task {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskStatus status; //e.g To do, in progress and done
+    private TaskStatus status = TaskStatus.TODO; //e.g To do, in progress and done
 
     private LocalDateTime dueDate;
 
 
     @ManyToOne
     @JoinColumn(name = "project_id")
+    @JsonBackReference
     private Project project;
 
     @ManyToOne
     @JoinColumn(name= "assignee_id")
+    @JsonIgnore
     private User assignee;
 
     @ManyToOne
     @JoinColumn(name="team_id")
+    @JsonIgnore
     private Team team;
 
     @OneToMany(mappedBy = "task")
+    @JsonIgnore
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "task")
+    @JsonIgnore
     private List<Attachment> attachments;
 
     @CreatedBy
@@ -61,4 +68,6 @@ public class Task {
 
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
+
+
 }

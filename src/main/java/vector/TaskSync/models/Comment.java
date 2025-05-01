@@ -1,6 +1,7 @@
 package vector.TaskSync.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +28,12 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "task_id")
+    @JsonIgnore
     private Task task;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User author;
 
     @CreatedBy

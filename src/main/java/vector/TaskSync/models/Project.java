@@ -1,5 +1,7 @@
 package vector.TaskSync.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -23,16 +25,19 @@ public class Project {
     @Column(nullable = false)
     private String name;
 
+
     private Integer progress;
 
-    @Column(nullable = false)
+
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "team_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Team team;
 
     @OneToMany(mappedBy = "project")
+    @JsonManagedReference
     private List<Task> tasks;
 
     @CreatedBy

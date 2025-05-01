@@ -1,0 +1,416 @@
+
+http://localhost/api/auth/register
+
+{
+    "firstName": "Test",
+    "lastName": "User",
+    "email": "test@example.com",
+    "password": "password123",
+    "role": "USER"
+}
+
+
+eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdGllcyI6WyJST0xFX1VTRVIiXSwic3ViIjoidGVzdEBleGFtcGxlLmNvbSIsImlhdCI6MTc0NjAyMDU0OCwiZXhwIjoxNzQ2MTA2OTQ4fQ.GMhswckmAFJHGqwwcaNbrUuoApjOBUuMkSXzRNUveAwPTNss_1EONBZIJbsocd-1iJYvpjQZoNXaC7QpXfFlRQ
+    
+
+eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdGllcyI6WyJ0ZWFtX2xlYWQ6YWRkX21lbWJlciIsIm1hbmFnZXI6cmVhZCIsInRlYW1fbGVhZDpjcmVhdGUiLCJtYW5hZ2VyOmNyZWF0ZSIsIm1hbmFnZXI6ZGVsZXRlIiwibWFuYWdlcjp1cGRhdGUiLCJ0ZWFtX2xlYWQ6YXNzaWduIiwiUk9MRV9URUFNX0xFQUQiXSwic3ViIjoidGVzdDFAZXhhbXBsZS5jb20iLCJpYXQiOjE3NDYwMjA2MTIsImV4cCI6MTc0NjEwNzAxMn0.B6nmlFhK_206dt85ruEPfw-37BmfFU_rbX5ZP_Ww9X90J4yuSJWyNIKeOHDe560oXvdjK-5cl4RQiT1ZrvMotA
+
+
+Method: POST
+URL: http://localhost:8080/api/auth/login
+Headers: Content-Type: application/json
+Body:
+json
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+
+Method: POST
+URL: http://localhost:8080/api/auth/refresh-token
+Headers: Authorization: Bearer <refresh_token>
+
+
+Method: POST
+URL: http://localhost:8080/api/auth/logout
+Headers: Authorization: Bearer <access_token>
+
+
+Method: GET
+URL: http://localhost:8080/api/users/me
+Headers: Authorization: Bearer <access_token>
+
+
+Method: GET
+URL: http://localhost:8080/api/teams
+Headers: Authorization: Bearer <access_token> (ROLE_TEAM_LEAD)
+
+
+
+
+
+
+
+Method: POST
+URL: http://localhost:8080/api/teams
+Headers:
+
+    Authorization: Bearer <access_token> (ROLE_TEAM_LEAD)
+    Content-Type: application/json
+
+Body:
+json
+{
+    "name": "New Team"
+}
+RESPONSE
+{
+    "id": 1,
+    "name": "New Team",
+    "members": null,
+    "tasks": null,
+    "createdBy": null,
+    "createdDate": null,
+    "lastModifiedBy": null,
+    "lastModifiedDate": null
+}
+
+
+
+
+
+
+
+
+Method: POST
+    URL: http://localhost:8080/api/teams/1/members/1
+    Headers: Authorization: Bearer <access_token> (ROLE_TEAM_LEAD)
+    Body : None
+    RESPONSE:
+    {
+    "id": 1,
+    "name": "New Team",
+    "members": [
+        {
+            "id": 1,
+            "firstName": "Test",
+            "lastName": "User",
+            "email": "test@example.com",
+            "role": "USER",
+            "enabled": true,
+            "username": "test@example.com",
+            "authorities": [
+                {
+                    "authority": "ROLE_USER"
+                }
+            ],
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "credentialsNonExpired": true
+        }
+    ],
+    "tasks": [],
+    "createdBy": null,
+    "createdDate": null,
+    "lastModifiedBy": null,
+    "lastModifiedDate": null
+}
+
+
+
+
+
+
+
+
+
+
+Method: POST
+URL: http://localhost:8080/api/projects
+Headers:
+
+    Authorization: Bearer <access_token> (ROLE_TEAM_LEAD)
+    Content-Type: application/json
+
+Body:
+json
+{
+    "name": "New Project",
+    "team": { "id": 1 }
+}
+
+RESPONSE
+{
+    "id": 1,
+    "name": "New Project",
+    "progress": null,
+    "description": null,
+    "tasks": null,
+    "createdBy": null, // test if it doesn't return user with his password or token
+    "createdDate": null, 
+    "lastModifiedBy": null, // test if it doesn't return user with his password or token
+    "lastModifiedDate": null
+}
+
+
+
+
+
+
+Method: GET
+URL: http://localhost:8080/api/projects/teams/1/projects
+Headers: Authorization: Bearer <access_token> (ROLE_USER or ROLE_TEAM_LEAD)
+RESPONSE:
+[
+    {
+        "id": 1,
+        "name": "New Project",
+        "progress": 0,
+        "description": null,
+        "tasks": [],
+        "createdBy": null,   // test if it doesn't return user with his password or token
+        "createdDate": null,
+        "lastModifiedBy": null,    // test if it doesn't return user with his password or token
+        "lastModifiedDate": null
+    }
+]
+
+
+
+
+
+
+
+Method: POST
+URL: http://localhost:8080/api/projects/1/tasks
+Headers:
+
+    Authorization: Bearer <access_token> (ROLE_TEAM_LEAD)
+    Content-Type: application/json
+
+Body:
+json
+{
+    "title": "Test Task",
+    "status": "TODO",
+    "assignee": { "id": 1 }
+}
+
+
+
+
+
+
+
+METHOD: GET
+URL : http://localhost:8080/api/projects/1/tasks
+USER AND TEAM_LEAD ARE ALLOWED
+RESPONSE:
+
+[
+    {
+        "id": 2,
+        "title": "Test Task",
+        "description": null,
+        "status": "TODO",
+        "dueDate": null,
+        "assignee": {
+            "id": 1,
+            "firstName": "Test",
+            "lastName": "User",
+            "email": "test@example.com",
+            "role": "USER",
+            "enabled": true,
+            "username": "test@example.com",
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "credentialsNonExpired": true
+        },
+        "team": null,
+        "comments": [],
+        "attachments": [],
+        "createdBy": null,
+        "createdDate": null,
+        "lastModifiedBy": null,
+        "lastModifiedDate": null
+    },
+    {
+        "id": 3,
+        "title": "Test Task",
+        "description": null,
+        "status": "TODO",
+        "dueDate": null,
+        "assignee": {
+            "id": 1,
+            "firstName": "Test",
+            "lastName": "User",
+            "email": "test@example.com",
+            "role": "USER",
+            "enabled": true,
+            "username": "test@example.com",
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "credentialsNonExpired": true
+        },
+        "team": null,
+        "comments": [],
+        "attachments": [],
+        "createdBy": null,
+        "createdDate": null,
+        "lastModifiedBy": null,
+        "lastModifiedDate": null
+    },
+    {
+        "id": 4,
+        "title": "Test Task",
+        "description": null,
+        "status": "TODO",
+        "dueDate": null,
+        "assignee": {
+            "id": 1,
+            "firstName": "Test",
+            "lastName": "User",
+            "email": "test@example.com",
+            "role": "USER",
+            "enabled": true,
+            "username": "test@example.com",
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "credentialsNonExpired": true
+        },
+        "team": null,
+        "comments": [],
+        "attachments": [],
+        "createdBy": null,
+        "createdDate": null,
+        "lastModifiedBy": null,
+        "lastModifiedDate": null
+    }
+]
+
+
+
+
+
+
+Method: PUT
+URL: http://localhost:8080/api/tasks/1
+Headers:
+
+    Authorization: Bearer <access_token> (ROLE_TEAM_LEAD)
+    Content-Type: application/json
+
+Body:
+json
+{
+    "title": "Updated Task",
+    "status": "DONE",
+    "assignee": { "id": 1 }
+}
+RESPONSE:
+{
+    "id": 1,
+    "title": "Updated Task",
+    "description": null,
+    "status": "DONE",
+    "dueDate": null,
+    "assignee": {
+        "id": 1,
+        "firstName": null,
+        "lastName": null,
+        "email": null,
+        "role": null,
+        "enabled": true,
+        "username": null,
+        "accountNonExpired": true,
+        "accountNonLocked": true,
+        "credentialsNonExpired": true
+    },
+    "team": null,
+    "comments": [],
+    "attachments": [],
+    "createdBy": null,
+    "createdDate": null,
+    "lastModifiedBy": null,
+    "lastModifiedDate": null
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Method: DELETE
+URL: http://localhost:8080/api/tasks/1
+Headers: Authorization: Bearer <access_token> (ROLE_TEAM_LEAD)
+Body: None
+Expected Response: 204 No Content
+
+
+
+
+
+
+
+
+Method: POST
+URL: http://localhost:8080/api/tasks/assign/1/1
+Headers: Authorization: Bearer <access_token> (ROLE_TEAM_LEAD)
+Body: None
+RESPONSE:
+{
+    "id": 2,
+    "title": "Test Task",
+    "description": null,
+    "status": "TODO",
+    "dueDate": null,
+    "assignee": {
+        "id": 1,
+        "firstName": "Test",
+        "lastName": "User",
+        "email": "test@example.com",
+        "role": "USER",
+        "enabled": true,
+        "username": "test@example.com",
+        "accountNonExpired": true,
+        "accountNonLocked": true,
+        "credentialsNonExpired": true
+    },
+    "team": null,
+    "comments": [],
+    "attachments": [],
+    "createdBy": null,
+    "createdDate": null,
+    "lastModifiedBy": null,
+    "lastModifiedDate": null
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
