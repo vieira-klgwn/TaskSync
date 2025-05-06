@@ -14,7 +14,7 @@ import vector.TaskSync.models.TokenType;
 import vector.TaskSync.models.User;
 import vector.TaskSync.repositories.TokenRepository;
 import vector.TaskSync.repositories.UserRepository;
-
+import java.util.logging.Logger;
 import java.io.IOException;
 
 @Service
@@ -25,6 +25,7 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private static final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -44,6 +45,9 @@ public class AuthenticationService {
         System.out.println("Refresh Token Length: " + refreshToken.length());
         saveUserToken(savedUser, token);
         saveUserToken(savedUser, refreshToken);
+
+        logger.info("accesstoken: "+token);
+        logger.info("refreshtoken: "+refreshToken);
         return AuthenticationResponse.builder()
                 .accessToken(token)
                 .refreshToken(refreshToken)

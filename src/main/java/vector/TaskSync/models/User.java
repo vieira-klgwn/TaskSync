@@ -1,15 +1,10 @@
 package vector.TaskSync.models;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 
 import java.util.Collection;
 import java.util.List;
@@ -25,20 +20,19 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String firstName;
     private String lastName;
+
     @JsonIgnore
     private String password;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "user")
-    @JsonIgnore // Prevent serialization of objects. In case you don't put this, you fall in a circle of responses when you request for the response
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ToString.Exclude
     private List<Token> tokens;
-
-
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,11 +40,12 @@ public class User implements UserDetails {
 
     @ManyToMany
     @JoinTable(
-    name = "user_teams",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "team_id")
+            name = "user_teams",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "team_id")
     )
     @JsonIgnore
+    @ToString.Exclude
     private List<Team> teams;
 
     @Override
@@ -83,4 +78,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

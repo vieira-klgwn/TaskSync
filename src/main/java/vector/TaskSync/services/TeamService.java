@@ -59,6 +59,9 @@ public class TeamService {
     public Team addMember (Long teamId, Long userId) {
         Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found with id: " +teamId));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        if (team.getMembers().contains(user)) {
+            throw new IllegalStateException("Team is already member of this team");
+        }
 
         team.getMembers().add(user);
         user.getTeams().add(team);
@@ -70,6 +73,9 @@ public class TeamService {
     public Team removeMember (Long teamId, Long userId) {
         Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found with id: " +teamId));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        if (!team.getMembers().contains(user)) {
+            throw new IllegalStateException("User is not a member of the team");
+        }
 
         team.getMembers().remove(user);
         user.getTeams().remove(team);

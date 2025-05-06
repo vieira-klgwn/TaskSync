@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import vector.TaskSync.audit.ApplicationAuditAware;
+import vector.TaskSync.audit.AuditConfig;
 import vector.TaskSync.repositories.UserRepository;
 
 @Configuration

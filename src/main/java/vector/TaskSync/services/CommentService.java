@@ -75,4 +75,10 @@ public class CommentService {
     public List<Comment> getCommentsByTask(Long taskId) {
         return commentRepository.findByTaskId(taskId);
     }
+
+    public boolean isCommentAuthor(Long commentId, String email) {
+        return getCommentById(commentId)
+                .map(comment -> comment.getAuthor() != null && comment.getAuthor().getEmail().equals(email))
+                .orElse(false);
+    }
 }

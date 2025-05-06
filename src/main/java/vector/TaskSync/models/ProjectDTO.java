@@ -1,20 +1,15 @@
-// User Data Transfer Object
-
 package vector.TaskSync.models;
 
+
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class ProjectDTO {
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String role;
-
+    private String name;
+    private Team team;
 }

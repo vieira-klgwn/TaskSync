@@ -1,17 +1,14 @@
 package vector.TaskSync.models;
 
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "token")
 public class Token {
 
     @Id
@@ -19,18 +16,19 @@ public class Token {
     @SequenceGenerator(name = "token_seq", sequenceName = "token_seq", allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false ,length = 1024)
+    @Column(nullable = false, length = 1024)
     private String token;
 
     @Enumerated(EnumType.STRING)
-    public TokenType tokenType = TokenType.BEARER;
+    private TokenType tokenType = TokenType.BEARER;
 
-    public boolean revoked;
+    private boolean revoked;
 
-    public boolean expired;
+    private boolean expired;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private User user;
 
 

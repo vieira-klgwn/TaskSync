@@ -1,6 +1,8 @@
 package vector.TaskSync.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import vector.TaskSync.models.Project;
 import vector.TaskSync.models.Task;
@@ -23,9 +25,24 @@ public class ProjectService {
     public Project createProject(Project project) {
         return projectRepository.save(project);
     }
-    public Project getProjectById(Long id) {
-        return projectRepository.findById(id)
-                .orElse(null);
+
+    public Project getProjectById(Long projectId) {
+//        Project project = projectRepository.findByIdWithTeam(projectId).orElse(null);
+         Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
+        if (project == null) {
+            return null;
+        }
+        return project;
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        boolean isTeamLead = authentication.getAuthorities().stream()
+//                .anyMatch(auth -> auth.getAuthority().equals("TEAM_LEAD"));
+//        if (isTeamLead) {
+//            return project;
+//        }
+//        boolean isTeamMember = project.getTeam() != null &&
+//                project.getTeam().getMembers().stream()
+//                        .anyMatch(member -> member.getEmail().equals(email));
+//        return isTeamMember ? project : null;
     }
 
     public Project updateProject(Long id, Project project) {
