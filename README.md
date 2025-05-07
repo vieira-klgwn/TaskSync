@@ -54,7 +54,7 @@ Tested on Windows 11, should also work on Mac or Linux.
 
 ### Backend Setup
 
-```
+
 
 git clone https://github.com/your-username/tasksync-pms.git
 cd tasksync-pms
@@ -147,7 +147,9 @@ There’s no formal license yet—this is a personal school project.
 Please don’t copy it for your own homework. 😅
 
 Thanks for checking out TaskSync PMS!
+
 I hope you like it as much as I enjoyed building it!
+
 If you have feedback, drop it in the issues section. 😊
 
 <p align="center"> <a href="https://github.com/your-username/tasksync-pms/issues">Report a Bug</a> | <a href="https://github.com/your-username/tasksync-pms">View on GitHub</a> </p> ```
