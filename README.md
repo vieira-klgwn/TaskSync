@@ -3,20 +3,8 @@
 Welcome to **TaskSync PMS**, a project management system I built for my high school computer science class!  
 This app helps teams organize projects, manage tasks, and collaborate through comments. It’s built with a **Java + Spring Boot** backend and a **React + TypeScript** frontend. I put a lot of effort into this and I’m really excited to share it!
 
-<p align="center">
-  ![Screenshot From 2025-05-07 11-23-24](https://github.com/user-attachments/assets/1acb6d2b-e34f-40aa-91bf-55dbd7ba52d3)
+![Screenshot From 2025-05-07 11-23-24](https://github.com/user-attachments/assets/11e3be25-a8c2-4b78-9434-24f143a7da1c)
 
-</p>
-<p align="center">
-  ![Screenshot From 2025-05-07 11-29-39](https://github.com/user-attachments/assets/06738624-51d1-4a6b-9d35-ed8b0ebf837f)
-
-</p>
-<p align="center">
-  ![Screenshot From 2025-05-07 11-36-55](https://github.com/user-attachments/assets/8267fcd3-d375-4811-a005-ddd26dff7bb4)
-  ![Screenshot From 2025-05-07 11-37-23](https://github.com/user-attachments/assets/80170541-c91d-4318-b197-f09988edaeb8)
-
-
-</p>
 
 
 ---
