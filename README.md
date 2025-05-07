@@ -7,6 +7,17 @@ This app helps teams organize projects, manage tasks, and collaborate through co
 
 
 
+
+
+![Screenshot From 2025-05-07 11-29-39](https://github.com/user-attachments/assets/7c8cebcd-4670-44de-861d-8d290e7d6e88)
+
+
+
+
+![Screenshot From 2025-05-07 11-36-55](https://github.com/user-attachments/assets/ed1abdc3-319a-4726-9d00-3b00e80fcfd5)
+
+![Screenshot From 2025-05-07 11-37-23](https://github.com/user-attachments/assets/47b269e6-19bd-4fe0-807d-48917468a385)
+
 ---
 
 ## 🌟 Features
