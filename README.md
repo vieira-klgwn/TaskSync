@@ -4,8 +4,20 @@ Welcome to **TaskSync PMS**, a project management system I built for my high sch
 This app helps teams organize projects, manage tasks, and collaborate through comments. It’s built with a **Java + Spring Boot** backend and a **React + TypeScript** frontend. I put a lot of effort into this and I’m really excited to share it!
 
 <p align="center">
-  <img src="https://via.placeholder.com/600x300.png?text=TaskSync+PMS+Demo" alt="TaskSync PMS Screenshot" width="600"/>
+  ![Screenshot From 2025-05-07 11-23-24](https://github.com/user-attachments/assets/1acb6d2b-e34f-40aa-91bf-55dbd7ba52d3)
+
 </p>
+<p align="center">
+  ![Screenshot From 2025-05-07 11-29-39](https://github.com/user-attachments/assets/06738624-51d1-4a6b-9d35-ed8b0ebf837f)
+
+</p>
+<p align="center">
+  ![Screenshot From 2025-05-07 11-36-55](https://github.com/user-attachments/assets/8267fcd3-d375-4811-a005-ddd26dff7bb4)
+  ![Screenshot From 2025-05-07 11-37-23](https://github.com/user-attachments/assets/80170541-c91d-4318-b197-f09988edaeb8)
+
+
+</p>
+
 
 ---
 
@@ -60,11 +72,13 @@ git clone https://github.com/your-username/tasksync-pms.git
 cd tasksync-pms
 
 
-Set up PostgreSQL:
+### Set up PostgreSQL:
 
-Create a database named tasksync.
 
-Update your credentials in src/main/resources/application.properties:
+
+- Create a database named tasksync.
+
+- Update your credentials in src/main/resources/application.properties:
 
 properties
 
@@ -72,7 +86,8 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/tasksync
 spring.datasource.username=your-username
 spring.datasource.password=your-password
 spring.jpa.hibernate.ddl-auto=update
-Build and run the backend:
+
+- Build and run the backend:
 
 
 
@@ -80,7 +95,13 @@ mvn clean install
 mvn spring-boot:run
 The backend will be available at http://localhost:8080.
 
-Frontend Setup
+
+
+
+
+
+
+### Frontend Setup
 In a new terminal:
 
 
@@ -90,18 +111,18 @@ npm install
 npm run dev
 The frontend will be available at http://localhost:8081.
 
-💻 Using the App
-Go to http://localhost:8081/register to sign up.
+###  💻 Using the App
+- Go to http://localhost:8081/register to sign up.
 
-Choose TEAM_LEAD to create teams or USER to join them.
+- Choose TEAM_LEAD to create teams or USER to join them.
 
-After login, team leads can create teams and add members.
+- After login, team leads can create teams and add members.
 
-Click a team → View projects → View tasks.
+- Click a team → View projects → View tasks.
 
-Team leads can update tasks; all users can add comments.
+- Team leads can update tasks; all users can add comments.
 
-🗄️ Database Schema
+### 🗄️ Database Schema
 The app uses the following tables:
 
 users: id, first_name, last_name, email, password, role
@@ -118,14 +139,22 @@ comments: task comments
 
 tokens: JWT access and refresh tokens
 
-⚠️ Known Issues
+
+
+
+### ⚠️ Known Issues
 Team list might not load right after login — a refresh usually fixes it.
 
 Mobile responsiveness needs work.
 
 Error messages could be more user-friendly.
 
-🔮 Future Ideas
+
+
+
+
+
+### 🔮 Future Ideas
 Search users when adding to teams.
 
 Let team leads remove members.
@@ -134,17 +163,38 @@ Notifications for task updates.
 
 UI improvements (colors, animations, mobile polish).
 
-💡 Why I Built This
+
+
+
+
+
+
+
+### 💡 Why I Built This
 I wanted to challenge myself to create a full-stack app with real-world features like authentication and permissions.
 Learning JWT and React context was tricky, but rewarding! I thought a project management tool would be perfect for group work—and my teacher liked the idea too.
 
-🤝 Contributing
+
+
+###  🤝 Contributing
 This is a school project, so I’m not accepting contributions yet.
 But feel free to open an issue if you spot bugs or have suggestions!
 
-📜 License
+
+
+
+### 📜 License
 There’s no formal license yet—this is a personal school project.
 Please don’t copy it for your own homework. 😅
+
+
+
+
+
+
+
+
+
 
 Thanks for checking out TaskSync PMS!
 
