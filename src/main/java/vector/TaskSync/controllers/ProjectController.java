@@ -11,7 +11,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vector.TaskSync.models.Project;
+import vector.TaskSync.models.User;
+import vector.TaskSync.models.UserDTO;
 import vector.TaskSync.services.ProjectService;
+import vector.TaskSync.services.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +34,8 @@ public class ProjectController {
         Project createdProject = projectService.createProject(project);
         return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
     }
+
+
 
     @GetMapping("/teams/{teamId}/projects")
     @PreAuthorize("hasAnyRole('USER', 'TEAM_LEAD')")
@@ -64,5 +69,12 @@ public class ProjectController {
 //        logger.debug("Project ID {} found for user: {}", projectId, email);
         Project project = projectService.getProjectById(projectId);
         return new ResponseEntity<>(project, HttpStatus.OK);
+    }
+
+    @GetMapping("/{projectId}/members")
+    @PreAuthorize("hasAnyRole('TEAM_LEAD', 'MEMBER')")
+    public ResponseEntity<List<UserDTO>> getProjectMembers(@PathVariable Long projectId) {
+        List<UserDTO> members = projectService.getProjectMembers(projectId);
+        return ResponseEntity.ok(members);
     }
 }

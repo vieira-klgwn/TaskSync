@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import vector.TaskSync.models.Project;
-import vector.TaskSync.models.Task;
+import vector.TaskSync.models.*;
 import vector.TaskSync.repositories.ProjectRepository;
 import vector.TaskSync.repositories.TaskRepository;
-import vector.TaskSync.models.TaskStatus;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +23,23 @@ public class ProjectService {
     }
     public Project createProject(Project project) {
         return projectRepository.save(project);
+    }
+
+    public List<UserDTO> getProjectMembers(Long projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow( () -> new IllegalArgumentException("Project not found with id"  + projectId));
+        return project.getTeam().getMembers().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private UserDTO convertToDTO(User user) {
+        return UserDTO.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .role(user.getRole().toString())
+                .build();
     }
 
     public Project getProjectById(Long projectId) {
